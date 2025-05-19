@@ -7,7 +7,7 @@
   "browser_action": {
     "browser_style": false,
     "default_area": "navbar",
-    "default_title": "Shush this Site.",
+    "default_title": "Shush",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "assets/logo.svg",
