@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Big Blocker</title>
+        <link rel="stylesheet" href="popup.css" />
+    </head>
+    <body>
+        <h3>Shush</h3>
+        <article>
+            <div class="status-bar">
+                <img
+                    src="assets/warning.svg"
+                    alt="warning sign"
+                    width="24"
+                    height="24"
+                />
+                <p id="status">This site is not blocked.</p>
+            </div>
+
+            <div class="page" id="signupPage" style="display: none">
+                <input
+                    id="savePassword"
+                    type="password"
+                    placeholder="Set Password"
+                />
+                <button id="saveBtn" class="primary-btn">
+                    Save Master Password
+                </button>
+            </div>
+
+            <div class="page" id="loginPage" style="display: none">
+                <input
+                    id="loginPassword"
+                    type="password"
+                    placeholder="Enter Password"
+                />
+                <button id="loginBtn" class="primary-btn">Unlock</button>
+            </div>
+
+            <div class="page" id="blockPage" style="display: none">
+                <input id="current-url" type="url" />
+                <div class="row">
+                    <button class="day">Mon</button>
+                    <button class="day">Tue</button>
+                    <button class="day">Wed</button>
+                    <button class="day">Thurs</button>
+                    <button class="day">Fri</button>
+                    <button class="day">Sat</button>
+                    <button class="day">Sun</button>
+                </div>
+
+                <div class="row">
+                    <label for="from">
+                        From :
+                        <input
+                            type="time"
+                            id="from"
+                            name="block-from"
+                            required
+                        />
+                    </label>
+                    <label for="to">
+                        To :
+                        <input type="time" id="to" name="block-to" required />
+                    </label>
+                </div>
+                <label for="redirect-url">
+                    Redirect URL :
+                    <input
+                        type="url"
+                        id="redirect-url"
+                        name="redirect-field"
+                        placeholder="reddit.com/r/CatGifs/"
+                    />
+                </label>
+                <button class="primary-btn">Block Site.</button>
+            </div>
+
+            <div class="page" id="unblockPage" style="display: none">
+                <input id="current-url" type="url" />
+                <button class="primary-btn">Unblock Site.</button>
+            </div>
+        </article>
+    </body>
+</html>
+<script src="popup.js"></script>
