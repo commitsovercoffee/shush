@@ -4,97 +4,537 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Shush</title>
-        <link rel="stylesheet" href="popup.css" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+        />
+        <style>
+            :root {
+                --bg: #f8f9fa;
+                --text: #2e2e2e;
+                --text-light: #718096;
+                --accent: #4299e1;
+                --accent-hover: #3182ce;
+                --danger: #e53e3e;
+                --success: #38a169;
+                --border: #e1e5e9;
+                --border-light: #ebf8ff;
+                --block-bg: #f7fafc;
+                --allowed-bg: #c6f6d5;
+                --allowed-fg: #38a169;
+                --blocked-bg: #fed7d7;
+                --blocked-fg: #c53030;
+                --schedule-bg: #bee3f8;
+                --schedule-fg: #2b6cb0;
+                --timer-bg: #fbd38d;
+                --timer-fg: #975a16;
+                --active-tab: #2b6cb0;
+                --shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                --transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: var(--bg);
+                color: var(--text);
+                font-family:
+                    "Inter",
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    sans-serif;
+                font-size: 14px;
+                line-height: 1.5;
+                margin: 0;
+                padding: 1rem;
+                min-width: 24rem;
+                max-width: 24rem;
+                min-height: 36rem;
+                max-height: 36rem;
+                -webkit-font-smoothing: antialiased;
+            }
+            .header {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+            .header-logo {
+                width: 24px;
+                height: 24px;
+            }
+            .header-title {
+                font-size: 18px;
+                font-weight: 600;
+                color: var(--accent);
+                margin: 0;
+            }
+            .current-site-info {
+                background: #fff;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 12px;
+                margin-bottom: 16px;
+                box-shadow: var(--shadow);
+            }
+            .url {
+                display: block;
+                font-family: "Menlo", "Consolas", monospace;
+                font-size: 13px;
+                color: var(--text);
+                background: var(--block-bg);
+                padding: 8px;
+                border-radius: 6px;
+                margin-bottom: 8px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .site-status-badge {
+                display: inline-block;
+                padding: 4px 8px;
+                border-radius: 16px;
+                font-size: 13px;
+                font-weight: 500;
+                margin-bottom: 8px;
+            }
+            .site-status-badge.allowed {
+                background: var(--allowed-bg);
+                color: var(--allowed-fg);
+            }
+            .site-status-badge.blocked {
+                background: var(--blocked-bg);
+                color: var(--blocked-fg);
+            }
+            .current-site-blocks {
+                background: #fff;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                overflow: hidden;
+            }
+            .block-item-mini {
+                padding: 8px 12px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 13px;
+                border-bottom: 1px solid var(--border);
+                transition: background var(--transition);
+            }
+            .block-item-mini:hover {
+                background: var(--block-bg);
+            }
+            .block-item-mini:last-child {
+                border-bottom: none;
+            }
+            .tabs {
+                display: flex;
+                gap: 4px;
+                margin-bottom: -1px;
+            }
+            .tab {
+                flex: 1;
+                padding: 10px 12px;
+                cursor: pointer;
+                text-align: center;
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--text-light);
+                background: var(--bg);
+                border: 1px solid var(--border);
+                border-radius: 6px 6px 0 0;
+                transition: var(--transition);
+            }
+            .tab:hover {
+                background: var(--border-light);
+            }
+            .tab.active {
+                background: #fff;
+                color: var(--active-tab);
+                border-bottom: 1px solid #fff;
+            }
+            .tab-content {
+                display: none;
+                background: #fff;
+                padding: 16px;
+                border-left: 1px solid var(--border);
+                border-right: 1px solid var(--border);
+                border-bottom: 1px solid var(--border);
+                border-radius: 0 0 6px 6px;
+                margin-bottom: 16px;
+            }
+            .tab-content.active {
+                display: block;
+            }
+            .form-group {
+                margin-bottom: 16px;
+            }
+            label {
+                display: block;
+                margin-bottom: 6px;
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--text);
+            }
+            input,
+            select {
+                width: 100%;
+                padding: 8px 12px;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                font-size: 14px;
+                transition: var(--transition);
+            }
+            input:focus,
+            select:focus {
+                outline: none;
+                border-color: var(--accent);
+                box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+            }
+            .time-inputs {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .time-inputs input {
+                flex: 1;
+            }
+            .time-separator {
+                padding: 0 4px;
+            }
+            .time-unit-label {
+                font-size: 13px;
+                color: var(--text-light);
+                width: 36px;
+            }
+            .days-selector {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 6px;
+                margin-top: 8px;
+            }
+            .day-btn {
+                padding: 6px 4px;
+                border: 1px solid var(--border);
+                background: #fff;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 12px;
+                text-align: center;
+                transition: var(--transition);
+            }
+            .day-btn:hover {
+                background: var(--border-light);
+            }
+            .day-btn.selected {
+                background: var(--accent);
+                color: #fff;
+                border-color: var(--accent);
+            }
+            .timer-section {
+                margin-bottom: 16px;
+            }
+            .timer-display {
+                text-align: center;
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--text);
+                margin: 12px 0;
+                padding: 12px 16px;
+                background: var(--block-bg);
+                border-radius: 8px;
+                border: 1px solid var(--border);
+                transition: var(--transition);
+            }
+            .timer-display.active {
+                background: var(--blocked-bg);
+                color: var(--blocked-fg);
+                border-color: var(--blocked-bg);
+            }
+            .quick-timers {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+                margin: 12px 0;
+            }
+            .quick-timer {
+                padding: 8px 8px;
+                border: 1px solid var(--border);
+                background: #fff;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 13px;
+                text-align: center;
+                transition: var(--transition);
+            }
+            .quick-timer:hover {
+                background: var(--block-bg);
+            }
+            .quick-timer.selected {
+                background: var(--accent);
+                color: #fff;
+                border-color: var(--accent);
+            }
+            .action-buttons {
+                display: flex;
+                gap: 8px;
+                margin-top: 16px;
+            }
+            button {
+                flex: 1;
+                padding: 10px 16px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 500;
+                transition: var(--transition);
+            }
+            .btn-primary {
+                background: var(--accent);
+                color: #fff;
+            }
+            .btn-primary:hover {
+                background: var(--accent-hover);
+            }
+            .btn-primary:disabled {
+                background: #a0aec0;
+                cursor: not-allowed;
+            }
+            .btn-danger {
+                background: var(--danger);
+                color: #fff;
+            }
+            .btn-danger:hover {
+                background: #c53030;
+            }
+            .btn-success {
+                background: var(--success);
+                color: #fff;
+            }
+            .btn-success:hover {
+                background: #2f855a;
+            }
+            .btn-secondary {
+                background: #718096;
+                color: #fff;
+            }
+            .btn-secondary:hover {
+                background: #4a5568;
+            }
+            .btn-mini {
+                padding: 4px 8px;
+                font-size: 12px;
+                background: none;
+                color: var(--text-light);
+                border: 1px solid var(--border);
+            }
+            .btn-mini:hover {
+                background: var(--block-bg);
+            }
+            .block-list {
+                max-height: 160px;
+                overflow-y: auto;
+                margin-top: 12px;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                background: #fff;
+            }
+            .block-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 12px;
+                border-bottom: 1px solid var(--border);
+                font-size: 13px;
+                transition: var(--transition);
+            }
+            .block-item:last-child {
+                border-bottom: none;
+            }
+            .block-item:hover {
+                background: var(--block-bg);
+            }
+            .block-item button {
+                flex: 0;
+            }
+            .block-type {
+                font-size: 11px;
+                padding: 2px 6px;
+                border-radius: 3px;
+                margin-left: 8px;
+            }
+            .block-type.instant {
+                background: var(--blocked-bg);
+                color: var(--blocked-fg);
+            }
+            .block-type.schedule {
+                background: var(--schedule-bg);
+                color: var(--schedule-fg);
+            }
+            .block-type.timer {
+                background: var(--timer-bg);
+                color: var(--timer-fg);
+            }
+            .export-import {
+                display: flex;
+                gap: 8px;
+                margin-top: 16px;
+            }
+            .file-input {
+                display: none;
+            }
+            .empty-state {
+                text-align: center;
+                color: var(--text-light);
+                font-size: 13px;
+                padding: 32px 16px;
+            }
+        </style>
     </head>
     <body>
-        <h3>Shush</h3>
-        <article>
-            <div class="prompt">
-                <img
-                    src="assets/warning.svg"
-                    alt="Warning sign."
-                    width="24"
-                    height="24"
-                />
-                <p id="message">Hi Gorgeous. Wazzup?</p>
-            </div>
+        <div class="header">
+            <img
+                src="./assets/logo.svg"
+                alt="Website Blocker Logo"
+                class="header-logo"
+            />
+            <h3 class="header-title">Shush</h3>
+        </div>
 
-            <div class="section" id="signup" style="display: none">
-                <input
-                    id="set-password"
-                    type="password"
-                    placeholder="Enter Password"
-                />
-                <button class="primary-btn" id="signup-btn">
-                    Set Password
+        <div class="current-site-info" id="currentSiteInfo">
+            <span class="site-status-badge" id="siteStatusBadge"
+                >Checking...</span
+            >
+            <div class="url" id="siteUrl">Checking tab...</div>
+            <div class="current-site-blocks" id="currentSiteBlocks">
+                Loading site information...
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="instant">Block</button>
+            <button class="tab" data-tab="schedule">Schedule</button>
+            <button class="tab" data-tab="timer">Timer</button>
+            <button class="tab" data-tab="manage">Manage</button>
+        </div>
+
+        <!-- Instant Block/Unblock Tab -->
+        <div class="tab-content active" id="instant-content">
+            <div class="action-buttons">
+                <button id="actionBtn" class="btn-danger">
+                    Block This Site
                 </button>
             </div>
+        </div>
 
-            <div class="section" id="login" style="display: none">
-                <input
-                    id="input-password"
-                    type="password"
-                    placeholder="Enter Password"
-                />
-                <button class="primary-btn" id="login-btn">
-                    Unlock Session
-                </button>
+        <!-- Schedule Tab -->
+        <div class="tab-content" id="schedule-content">
+            <div class="form-group">
+                <label>Select Days:</label>
+                <div class="days-selector">
+                    <button class="day-btn" data-day="0">Sun</button>
+                    <button class="day-btn" data-day="1">Mon</button>
+                    <button class="day-btn" data-day="2">Tue</button>
+                    <button class="day-btn" data-day="3">Wed</button>
+                    <button class="day-btn" data-day="4">Thu</button>
+                    <button class="day-btn" data-day="5">Fri</button>
+                    <button class="day-btn" data-day="6">Sat</button>
+                </div>
             </div>
 
-            <div class="section" id="home" style="display: none">
-                <!-- Current URL input -->
-                <label for="current-url">Current Site:</label>
-                <input
-                    id="current-url"
-                    type="url"
-                    placeholder="example.com"
-                    required
-                />
+            <div class="form-group">
+                <label>Time Range:</label>
+                <div class="time-inputs">
+                    <input type="time" id="scheduleStartTime" value="09:00" />
+                    <span class="time-separator">to</span>
+                    <input type="time" id="scheduleEndTime" value="17:00" />
+                </div>
+            </div>
 
-                <!-- Day Picker -->
-                <fieldset>
-                    <legend>Block on Days:</legend>
-                    <div class="row day-picker">
-                        <button type="button" class="day">Mon</button>
-                        <button type="button" class="day">Tue</button>
-                        <button type="button" class="day">Wed</button>
-                        <button type="button" class="day">Thu</button>
-                        <button type="button" class="day">Fri</button>
-                        <button type="button" class="day">Sat</button>
-                        <button type="button" class="day">Sun</button>
-                    </div>
-                </fieldset>
+            <div class="action-buttons">
+                <button id="addScheduleBtn" class="btn-primary">
+                    Schedule a Block
+                </button>
+            </div>
+        </div>
 
-                <!-- Time Range -->
-                <div class="row">
-                    <label for="from">
-                        From:
-                        <input
-                            type="time"
-                            id="from"
-                            name="block-from"
-                            required
-                        />
-                    </label>
-                    <label for="to">
-                        To:
-                        <input type="time" id="to" name="block-to" required />
-                    </label>
+        <!-- Timer Tab -->
+        <div class="tab-content" id="timer-content">
+            <div class="timer-section">
+                <div class="timer-display" id="timerDisplay">No timer set</div>
+
+                <div class="quick-timers">
+                    <button class="quick-timer" data-minutes="15">
+                        15 min
+                    </button>
+                    <button class="quick-timer" data-minutes="30">
+                        30 min
+                    </button>
+                    <button class="quick-timer" data-minutes="60">
+                        1 hour
+                    </button>
+                    <button class="quick-timer" data-minutes="120">
+                        2 hours
+                    </button>
+                    <button class="quick-timer" data-minutes="240">
+                        4 hours
+                    </button>
+                    <button class="quick-timer" data-minutes="480">
+                        8 hours
+                    </button>
                 </div>
 
-                <!-- Redirect URL -->
-                <label for="redirect-url">Redirect URL (optional):</label>
-                <input
-                    type="url"
-                    id="redirect-url"
-                    name="redirect-field"
-                    placeholder="https://en.wikipedia.org/wiki/Deep_work"
-                />
+                <div class="form-group">
+                    <label>Custom Duration:</label>
+                    <div class="time-inputs">
+                        <input
+                            type="number"
+                            id="customHours"
+                            placeholder="Hours"
+                            min="0"
+                            max="23"
+                            value="0"
+                        />
+                        <span class="time-unit-label">Hr</span>
+                        <input
+                            type="number"
+                            id="customMinutes"
+                            placeholder="Minutes"
+                            min="0"
+                            max="59"
+                            value="15"
+                        />
+                        <span class="time-unit-label">Min</span>
+                    </div>
+                </div>
 
-                <!-- Submit Button -->
-                <button type="button" class="primary-btn">Block Site</button>
+                <div class="action-buttons">
+                    <button id="startTimerBtn" class="btn-primary">
+                        Start Timer & Block
+                    </button>
+                </div>
             </div>
-        </article>
+        </div>
+
+        <!-- Manage Blocks Tab -->
+        <div class="tab-content" id="manage-content">
+            <div class="block-list" id="blockList"></div>
+            <div class="export-import">
+                <button id="exportBtn" class="btn-secondary">Export</button>
+                <button id="importBtn" class="btn-secondary">Import</button>
+                <input
+                    type="file"
+                    id="importFile"
+                    class="file-input"
+                    accept=".json"
+                />
+            </div>
+        </div>
+
+        <script src="popup.js"></script>
     </body>
 </html>
-<script src="popup.js"></script>
