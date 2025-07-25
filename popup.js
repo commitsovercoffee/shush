@@ -148,14 +148,21 @@ document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("startTimerBtn")
     .addEventListener("click", startTimer);
-  document.getElementById("stopTimerBtn").addEventListener("click", stopTimer);
-  document.getElementById("exportBtn").addEventListener("click", exportBlocks);
   document.getElementById("importBtn").addEventListener("click", () => {
     document.getElementById("importFile").click();
   });
   document
     .getElementById("importFile")
     .addEventListener("change", importBlocks);
+
+  // Export button handler
+  const exportBtn = document.getElementById("exportBtn");
+  if (exportBtn) {
+    exportBtn.addEventListener("click", exportBlocks);
+    console.log("Export button event listener attached");
+  } else {
+    console.error("Export button not found in DOM");
+  }
 
   // Load timer state
   loadTimerState();
@@ -937,28 +944,71 @@ function unblockFromManage(removeDataStr) {
 
 /**
  * Exports all permanent and scheduled blocks to a downloadable JSON file.
+ * @returns {Promise<void>}
  */
-function exportBlocks() {
-  Promise.all([
-    browser.storage.local.get("blockedSites"),
-    browser.storage.local.get("scheduledBlocks"),
-  ]).then(([bs, sb]) => {
+async function exportBlocks() {
+  try {
+    console.log("Starting export process...");
+
+    const [bs, sb] = await Promise.all([
+      browser.storage.local.get("blockedSites"),
+      browser.storage.local.get("scheduledBlocks"),
+    ]);
+
     const exportData = {
       blockedSites: bs.blockedSites || [],
       scheduledBlocks: sb.scheduledBlocks || {},
       exportDate: new Date().toISOString(),
+      version: "1.0", // Add version for future compatibility
+      extensionName: "Shush",
     };
 
+    // Create and trigger download
     const blob = new Blob([JSON.stringify(exportData, null, 2)], {
       type: "application/json",
     });
+
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `website-blocks-${new Date().toISOString().split("T")[0]}.json`;
-    a.click();
+    const downloadLink = document.createElement("a");
+    downloadLink.href = url;
+    downloadLink.download = `shush-blocks-${new Date().toISOString().split("T")[0]}.json`;
+
+    // Ensure the download works by temporarily adding to DOM
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+
+    // Clean up the blob URL
     URL.revokeObjectURL(url);
-  });
+
+    // Show success feedback
+    const exportBtn = document.getElementById("exportBtn");
+    const originalText = exportBtn.textContent;
+    exportBtn.textContent = "Exported!";
+    exportBtn.style.backgroundColor = "#48bb78";
+
+    setTimeout(() => {
+      exportBtn.textContent = originalText;
+      exportBtn.style.backgroundColor = "";
+    }, 2000);
+
+    console.log("Export completed successfully");
+  } catch (error) {
+    console.error("Export failed:", error);
+
+    // Show error feedback
+    const exportBtn = document.getElementById("exportBtn");
+    const originalText = exportBtn.textContent;
+    exportBtn.textContent = "Export Failed";
+    exportBtn.style.backgroundColor = "#e53e3e";
+
+    setTimeout(() => {
+      exportBtn.textContent = originalText;
+      exportBtn.style.backgroundColor = "";
+    }, 2000);
+
+    alert("Export failed. Please try again.");
+  }
 }
 
 /**

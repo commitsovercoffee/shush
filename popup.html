@@ -520,18 +520,28 @@
             </div>
         </div>
 
-        <!-- Manage Blocks Tab -->
-        <div class="tab-content" id="manage-content">
-            <div class="block-list" id="blockList"></div>
-            <div class="export-import">
-                <button id="exportBtn" class="btn-secondary">Export</button>
-                <button id="importBtn" class="btn-secondary">Import</button>
-                <input
-                    type="file"
-                    id="importFile"
-                    class="file-input"
-                    accept=".json"
-                />
+        <!-- In the manage tab content -->
+        <div id="manage-content" class="tab-content">
+            <div class="manage-header">
+                <h3>Manage Blocked Sites</h3>
+                <div class="import-export-buttons">
+                    <button id="exportBtn" class="btn-primary">
+                        Export Blocks
+                    </button>
+                    <button id="importBtn" class="btn-primary">
+                        Import Blocks
+                    </button>
+                    <input
+                        type="file"
+                        id="importFile"
+                        accept=".json"
+                        style="display: none"
+                    />
+                </div>
+            </div>
+
+            <div id="blockList" class="block-list">
+                <!-- Block items will be populated here -->
             </div>
         </div>
 
