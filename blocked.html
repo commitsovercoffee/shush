@@ -28,19 +28,6 @@
     <body>
         <h1>Website Blocked</h1>
         <p id="message"></p>
-        <script>
-            const messages = [
-                "Access denied. But hey, at least you tried.",
-                "Your prefrontal cortex called, it’s tired of your nonsense.",
-                "You said you'd stop doing this. I'm helping you keep that promise.",
-                "You think this will relax you? It never does.",
-                "You’ve reached your daily quota of bad decisions.",
-            ];
-
-            const messageElement = document.getElementById("message");
-            const randomIndex = Math.floor(Math.random() * messages.length);
-
-            messageElement.textContent = messages[randomIndex];
-        </script>
+        <script src="blocked.js" defer></script>
     </body>
 </html>
